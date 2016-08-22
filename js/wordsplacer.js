@@ -42,14 +42,14 @@ function placeWords(inWordsArr)
 			startX:-1,
 			startY:-1,
 			length:0,
-			rotation: ROTATION.HOR  
+			rotation: undefined
 		}
 	};
 	
 	var Word = function (wordText){
 		return {
 			text: wordText,
-			length: wordText.length(),
+			length: wordText.length,
 			position: new Position()
 		}
 	};
@@ -64,7 +64,7 @@ function placeWords(inWordsArr)
 	
     // Build matrix 8x8
 	var matrix = new Array(MATRIX_SIZE);
-	for(var idx = 0; idx < matrix.length(); idx++) {
+	for(var idx = 0; idx < matrix.length; idx++) {
 		matrix[idx] = new Array(MATRIX_SIZE).fill("");
 	}
 
@@ -79,18 +79,69 @@ function placeWords(inWordsArr)
 		for (let oneRotation of Rotations )
 		{
 			// running through the matrix and trying to place
-			for(var idx = 0; idx < matrix.length(); idx++)
+			for(var idx = 0; idx < matrix.length; idx++)
 			{
-				for(var idy = 0; idy < matrix[idx].length(); idx++)
+				for(var idy = 0; idy < matrix[idx].length; idx++)
 				{
-					// 
+					var posX = idx;
+					var posY = idy;
+
+                    //TODO: Optimize check
+                    // check if word can fit rest of cells
+                    if( rotation == Rotations.HOR &&
+                        (posX + oneWord.length) > MATRIX_SIZE )
+                    {
+                        continue;
+                    }
+                    if( rotation == Rotations.VERT &&
+                        (posY + oneWord.length) > MATRIX_SIZE )
+                    {
+                        continue;
+                    }
+
+                    if( rotation == Rotations.DIAG &&
+                        ((posX + oneWord.length) > MATRIX_SIZE ||
+                         (posY + oneWord.length) > MATRIX_SIZE) )
+                    {
+                        continue;
+                    }
+
+					// walk through all word letters and check if they can be placed in the matrix
+                    var canBePlaced = true;
 					for( var idxLetter = 0; idxLetter < oneWord.length; idxLetter++ )
 					{
-						
-					}
-				}
-			}
-		}
-	}
+                        const matrixCell = matrixp[posX][posY];
 
+                        if( matrixCell != "" &&
+                            matrixCell != oneWord[idxLetter] )
+                        {
+                            canBePlaced = false;
+                            break;
+                        }
+
+                        // increase matrix coords
+                        posX += 1 * (oneRotation == Rotations.HOR_ROTATION || oneRotation == Rotations.DIAG_ROTATION) ? 1:0;
+                        posY += 1 * (oneRotation == Rotations.VERT_ROTATION || oneRotation == Rotations.DIAG_ROTATION) ? 1:0;
+					}
+
+                    // if no obstacles were found, add position to available positions array and continue
+                    if( canBePlaced )
+                    {
+                        var position = new Position();
+                        position.startX = idx;
+                        position.startY = idy;
+                        position.rotation = oneRotation;
+                        position.length = oneWord.length;
+
+                        positions.push(position)
+                    }
+				} //for vary
+			} //for(var idx = 0; idx < matrix.length; idx++)
+		} //for (let oneRotation of Rotations )
+	} //for( var oneWord of wordsArray )
+
+    // if we have positions available, choose one and place word there
+    if(positions.length > 0){
+        
+    }
 }
