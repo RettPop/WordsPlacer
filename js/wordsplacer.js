@@ -142,6 +142,6 @@ function placeWords(inWordsArr)
 
     // if we have positions available, choose one and place word there
     if(positions.length > 0){
-        
+
     }
 }
