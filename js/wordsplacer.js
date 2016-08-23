@@ -2,6 +2,20 @@
  * 
  */
 
+//================================================================================
+var Rotations = {
+		HOR: 		{value: 0, name : "Horizontal", 				deltaV : 1,  deltaH : 0},
+		RHOR: 		{value: 1, name : "Reverse Horizontal", 		deltaV : -1, deltaH : 0},
+		VERT: 		{value: 2, name : "Vertical", 					deltaV : 0,  deltaH : 1},
+		RVERT: 		{value: 3, name : "Reverse Vertical", 			deltaV : 0,  deltaH : -1},
+		DIAG_DEGR: 	{value: 4, name : "Diagonal Degrading", 		deltaV : 1,  deltaH : 1},
+		RDIAG_DEGR: {value: 5, name : "Reverse Diagonal Degrading", deltaV : -1, deltaH : -1},
+		DIAG_GROW: 	{value: 6, name : "Diagonal Growing", 			deltaV : 1,  deltaH : -1},
+		RDIAG_GROW: {value: 7, name : "Reverse Diagonal Growing", 	deltaV : -1, deltaH : 1}
+};
+
+Object.freeze(Rotations);
+
 function placeWords(inWordsArr, rotationsArr, matrixSize)
 {
 	"use strict";
@@ -29,21 +43,7 @@ function placeWords(inWordsArr, rotationsArr, matrixSize)
     Filled matrix, placed and unplaced words arrays are returned to receiver
 
 	 */
-	
-	//================================================================================
-	var Rotations = {
-			HOR: 		{value: 0, name : "Horizontal", 				deltaH : 1,  deltaV : 0},
-			RHOR: 		{value: 1, name : "Reverse Horizontal", 		deltaH : -1, deltaV : 0},
-			VERT: 		{value: 2, name : "Vertical", 					deltaH : 0,  deltaV : 1},
-			RVERT: 		{value: 3, name : "Reverse Vertical", 			deltaH : 0,  deltaV : -1},
-			DIAG_DEGR: 	{value: 4, name : "Diagonal Degrading", 		deltaH : 1,  deltaV : 1},
-			RDIAG_DEGR: {value: 5, name : "Reverse Diagonal Degrading", deltaH : -1, deltaV : -1},
-			DIAG_GROW: 	{value: 6, name : "Diagonal Growing", 			deltaH : 1,  deltaV : -1},
-			RDIAG_GROW: {value: 7, name : "Reverse Diagonal Growing", 	deltaH : -1, deltaV : 1}
-	};
-	
-	Object.freeze(Rotations);
-	
+		
 	var Position = function () { return {
 			startX:-1,
 			startY:-1,
@@ -81,12 +81,21 @@ function placeWords(inWordsArr, rotationsArr, matrixSize)
 	var notplacesWords = [];
 	var positions = new Map();
 	
+	var rotationsAvailable = rotationsArr; 
+	if( rotationsArr == undefined || 0 == rotationsArr.length ) 
+	{
+		rotationsArr = [];
+		Object.keys(Rotations).forEach( function(item, index, array) { 
+			rotationsArr.push( Rotations[item] ); 
+		} );
+	}
+	
 	// for each word
 	for( var oneWord of wordsArray )
 	{
 		// reset rotations map with empty arrays
-		Object.keys(Rotations).forEach( function(item, index, array) { 
-			positions.set( Rotations[item], [] ); 
+		rotationsArr.forEach( function(item, index, array) { 
+				positions.set( item, [] ); 
 			} 
 		);
 		
@@ -104,13 +113,13 @@ function placeWords(inWordsArr, rotationsArr, matrixSize)
                     //TODO: Optimize check
                     // check if word can fit rest of cells
 					if( posX + oneRotation.deltaH * oneWord.length < 0 ||
-						posX + oneRotation.deltaH * oneWord.length >= MATRIX_SIZE ) 
+						posX + oneRotation.deltaH * oneWord.length > MATRIX_SIZE ) 
 					{
 						continue
 					}
 						
 					if( posY + oneRotation.deltaV * oneWord.length < 0 ||
-						posY + oneRotation.deltaV * oneWord.length >= MATRIX_SIZE ) 
+						posY + oneRotation.deltaV * oneWord.length > MATRIX_SIZE ) 
 					{
 						continue
 					}
@@ -147,7 +156,7 @@ function placeWords(inWordsArr, rotationsArr, matrixSize)
                     }
 				} //for vary
 			} //for(var idx = 0; idx < matrix.length; idx++)
-		} //for (let oneRotation of Rotations )
+		} //for (let oneRotation of positions.keys() )
 
 		// if we have positions available, choose one and place word there
 		let posArr = [];
@@ -219,6 +228,3 @@ function placeWords(inWordsArr, rotationsArr, matrixSize)
 
 
 //( placeWords(["АЛЬКОР", "ТРУБА", "ОСЬМИЗНАК", "ВЕНТИЛЯТ", "ГРЫМЗА", "ДВА", "КРЫША", "СЕМЕНЫЧ", "ЯБЛОКО", "НЕМЕЦ"]) )();
-
-
-
