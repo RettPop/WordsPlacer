@@ -2,7 +2,7 @@
  * 
  */
 
-function placeWords(inWordsArr)
+function placeWords(inWordsArr, rotationsArr, matrixSize)
 {
 	"use strict";
 	/*
@@ -30,10 +30,16 @@ function placeWords(inWordsArr)
 
 	 */
 	
+	//================================================================================
 	var Rotations = {
-			HOR: {value: 0, name : "Horizontal"},
-			VERT: {value: 1, name : "Vertical"},
-			DIAG: {value: 2, name : "Diagonal"}
+			HOR: 		{value: 0, name : "Horizontal", 				deltaH : 1,  deltaV : 0},
+			RHOR: 		{value: 1, name : "Reverse Horizontal", 		deltaH : -1, deltaV : 0},
+			VERT: 		{value: 2, name : "Vertical", 					deltaH : 0,  deltaV : 1},
+			RVERT: 		{value: 3, name : "Reverse Vertical", 			deltaH : 0,  deltaV : -1},
+			DIAG_DEGR: 	{value: 4, name : "Diagonal Degrading", 		deltaH : 1,  deltaV : 1},
+			RDIAG_DEGR: {value: 5, name : "Reverse Diagonal Degrading", deltaH : -1, deltaV : -1},
+			DIAG_GROW: 	{value: 6, name : "Diagonal Growing", 			deltaH : 1,  deltaV : -1},
+			RDIAG_GROW: {value: 7, name : "Reverse Diagonal Growing", 	deltaH : -1, deltaV : 1}
 	};
 	
 	Object.freeze(Rotations);
@@ -43,7 +49,7 @@ function placeWords(inWordsArr)
 			startY:-1,
 			length:0,
 			rotation: undefined
-		}
+		};
 	};
 	
 	var Word = function (wordText){
@@ -51,15 +57,16 @@ function placeWords(inWordsArr)
 			text: wordText,
 			length: wordText.length,
 			position: new Position()
-		}
+		};
 	};
 	
-	let MATRIX_SIZE = 8;
+	const MATRIX_SIZE = matrixSize || 8;
 	
+	//================================================================================
 	// Create array of words objects
 	var wordsArray = [];
 	for (let oneText of inWordsArr) {
-		wordsArray.push(new Word(oneText));
+		wordsArray.push(new Word(oneText.toUpperCase()));
 	}
 	
     // Build matrix 8x8
@@ -77,11 +84,14 @@ function placeWords(inWordsArr)
 	// for each word
 	for( var oneWord of wordsArray )
 	{
-		positions.set(Rotations.HOR, []);
-		positions.set(Rotations.VERT, []);
-		positions.set(Rotations.DIAG, []);
+		// reset rotations map with empty arrays
+		Object.keys(Rotations).forEach( function(item, index, array) { 
+			positions.set( Rotations[item], [] ); 
+			} 
+		);
+		
 		// for each rotation
-		for (let oneRotation of [Rotations.HOR, Rotations.VERT, Rotations.DIAG] )
+		for (let oneRotation of positions.keys() )
 		{
 			// running through the matrix and trying to place
 			for(let idx = 0; idx < matrix.length; idx++)
@@ -93,23 +103,18 @@ function placeWords(inWordsArr)
 
                     //TODO: Optimize check
                     // check if word can fit rest of cells
-                    if( oneRotation == Rotations.HOR &&
-                        (posX + oneWord.length) > MATRIX_SIZE )
-                    {
-                        continue;
-                    }
-                    if( oneRotation == Rotations.VERT &&
-                        (posY + oneWord.length) > MATRIX_SIZE )
-                    {
-                        continue;
-                    }
+					if( posX + oneRotation.deltaH * oneWord.length < 0 ||
+						posX + oneRotation.deltaH * oneWord.length >= MATRIX_SIZE ) 
+					{
+						continue
+					}
+						
+					if( posY + oneRotation.deltaV * oneWord.length < 0 ||
+						posY + oneRotation.deltaV * oneWord.length >= MATRIX_SIZE ) 
+					{
+						continue
+					}
 
-                    if( oneRotation == Rotations.DIAG &&
-                        ((posX + oneWord.length) > MATRIX_SIZE ||
-                         (posY + oneWord.length) > MATRIX_SIZE) )
-                    {
-                        continue;
-                    }
 
 					// walk through all word letters and check if they can be placed in the matrix
                     var canBePlaced = true;
@@ -125,8 +130,8 @@ function placeWords(inWordsArr)
                         }
 
                         // increase matrix coords
-                        posX += 1 * (oneRotation == Rotations.HOR || oneRotation == Rotations.DIAG) ? 1:0;
-                        posY += 1 * (oneRotation == Rotations.VERT || oneRotation == Rotations.DIAG) ? 1:0;
+                        posX += oneRotation.deltaH;
+                        posY += oneRotation.deltaV;
 					}
 
                     // if no obstacles were found, add position to available positions array and continue
@@ -144,31 +149,25 @@ function placeWords(inWordsArr)
 			} //for(var idx = 0; idx < matrix.length; idx++)
 		} //for (let oneRotation of Rotations )
 
-		//TODO: move to variable rotations amount 
 		// if we have positions available, choose one and place word there
-		let cntHor = positions.get(Rotations.HOR).length;
-		let cntVert = positions.get(Rotations.VERT).length;
-		let cntDiag = positions.get(Rotations.DIAG).length;
+		let posArr = [];
+		positions.forEach( function (oneRotationArr, oneRotation, map) {
+			if( oneRotationArr.length > 0 ) {
+				posArr.push(oneRotationArr);
+			}
+		} );
 			
 		//if we have at least one position... 
-	    if( (cntHor + cntVert + cntDiag) > 0 )
+	    if( 0 == posArr.length ) {
+	    	notplacesWords.push(oneWord);
+	    }
+	    else
 	    {
 	    	// choose one of available rotations.
 	    	// need as, i.e., DIAG rotation has less amount and being selected less than others
-			let posArr = [];
-			if ( positions.get(Rotations.HOR).length > 0 ) {
-				posArr.push(positions.get(Rotations.HOR));
-			}
-			if ( positions.get(Rotations.VERT).length > 0 ) {
-				posArr.push(positions.get(Rotations.VERT));
-			}
-			if ( positions.get(Rotations.DIAG).length > 0 ) {
-				posArr.push(positions.get(Rotations.DIAG));
-			}
-
 			let selRotationIdx = Math.floor(Math.random() * posArr.length + 1); 
 
-	    	// from rotation choosen select one of positions 
+	    	// from rotation chosen select one of positions 
 	        let randIdx = Math.floor(Math.random() * posArr[selRotationIdx - 1].length + 1);
 	        oneWord.position = posArr[selRotationIdx - 1][randIdx - 1];
 	        placedWords.push(oneWord);
@@ -180,15 +179,10 @@ function placeWords(inWordsArr)
 	        {
 	        	matrix[posX][posY] = oneWord.text.charAt(idx);
 
-	        	//TODO: Refactor
                 // increase matrix coords
-                posX += 1 * (oneWord.position.rotation == Rotations.HOR || oneWord.position.rotation == Rotations.DIAG) ? 1:0;
-                posY += 1 * (oneWord.position.rotation == Rotations.VERT || oneWord.position.rotation == Rotations.DIAG) ? 1:0;
+                posX += oneWord.position.rotation.deltaH;
+                posY += oneWord.position.rotation.deltaV;
 	        }
-	    }
-	    else
-	    {
-	    	notplacesWords.push(oneWord);
 	    }
 	} //for( var oneWord of wordsArray )
 	
