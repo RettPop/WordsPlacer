@@ -107,18 +107,19 @@ var Crossworder = (function()
 		// Create array of words objects
 		// Remove duplicates
 		// Shuffle randomly
-		var wordsArray = inWordsList.split(/\s*[;,]\s*/);
 		var shuffledWords = [];
-		wordsArray.forEach( function (item, idx, arr){
+		inWordsList.split(/\s*[;,]\s*/).forEach( function (item, idx, arr){
 			if( -1 == shuffledWords.indexOf(item.toUpperCase()) ) {
 				shuffledWords.push(item.toUpperCase());
 			}
 		} )
-		var shuffledWords = shuffle(shuffledWords);
-		wordsArray.length = 0;
+		shuffledWords = shuffle(shuffledWords);
+		var wordsArray = [];
 		for (let oneText of shuffledWords) {
 			wordsArray.push(new Word(oneText.toUpperCase()));
 		}
+		
+		shuffledWords.length = 0;
 		
 	    // Build matrix 8x8
 		var matrix = new Array(MATRIX_SIZE);
