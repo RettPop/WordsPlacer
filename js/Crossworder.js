@@ -105,8 +105,16 @@ var Crossworder = (function()
 		
 		//================================================================================
 		// Create array of words objects
+		// Remove duplicates
+		// Shuffle randomly
 		var wordsArray = inWordsList.split(/\s*[;,]\s*/);
-		var shuffledWords = shuffle(wordsArray);
+		var shuffledWords = [];
+		wordsArray.forEach( function (item, idx, arr){
+			if( -1 == shuffledWords.indexOf(item.toUpperCase()) ) {
+				shuffledWords.push(item.toUpperCase());
+			}
+		} )
+		var shuffledWords = shuffle(shuffledWords);
 		wordsArray.length = 0;
 		for (let oneText of shuffledWords) {
 			wordsArray.push(new Word(oneText.toUpperCase()));
