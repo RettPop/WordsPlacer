@@ -33,7 +33,32 @@ var Crossworder = (function()
 	
 	Object.freeze(Rotations);
 		
-	function placeWords (inWordsArr, rotationsArr, matrixSize)
+	// utility function
+	function shuffle(array) 
+	{
+	    let counter = array.length;
+	    let newArr = array.slice();
+
+	    // While there are elements in the array
+	    while (counter > 0) 
+	    {
+	        // Pick a random index
+	        let index = Math.floor(Math.random() * counter);
+
+	        // Decrease counter by 1
+	        counter--;
+
+	        // And swap the last element with it
+	        let temp = newArr[counter];
+	        newArr[counter] = newArr[index];
+	        newArr[index] = temp;
+	    }
+
+	    return newArr;
+	}
+	
+	
+	function placeWords (inWordsList, rotationsArr, matrixSize)
 	{
 		/*
 		 * Build 8x8 matrix
@@ -80,8 +105,10 @@ var Crossworder = (function()
 		
 		//================================================================================
 		// Create array of words objects
-		var wordsArray = [];
-		for (let oneText of inWordsArr) {
+		var wordsArray = inWordsList.split(/\s*[;,]\s*/);
+		var shuffledWords = shuffle(wordsArray);
+		wordsArray.length = 0;
+		for (let oneText of shuffledWords) {
 			wordsArray.push(new Word(oneText.toUpperCase()));
 		}
 		
@@ -94,7 +121,7 @@ var Crossworder = (function()
 	    // Create array of unplaced words
 	    // Create array of placed words
 		var placedWords = []; 
-		var notplacesWords = [];
+		var notplacedWords = [];
 		var positions = new Map();
 		
 		var rotationsAvailable = []; 
@@ -191,7 +218,7 @@ var Crossworder = (function()
 				
 			//if we have at least one position... 
 		    if( 0 == posArr.length ) {
-		    	notplacesWords.push(oneWord);
+		    	notplacedWords.push(oneWord);
 		    }
 		    else
 		    {
@@ -218,37 +245,31 @@ var Crossworder = (function()
 		    }
 		} //for( var oneWord of wordsArray )
 		
-		console.log("Words placed: " + placedWords.length);
-		alert("Words notplaced: " + notplacesWords.length);
-		let alphabet = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ".split(""); 
-		
+//		console.log("Words placed: " + placedWords.length);
+//		alert("Words notplaced: " + notplacedWords.length);
+		fillGaps(matrix, "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ".split(""));
+				
+		return {
+			matrix: matrix,
+			placed: placedWords.map( function(word){ return word.text; } ), 
+			notPlaced: notplacedWords.map( function(word){ return word.text; } ),
+		}
+	}//function placeWords
+	
+	function fillGaps(targetMatrix, alphabet) {
 		// fill matrix gaps with arbitrary letters
-		for( let idx=0; idx < MATRIX_SIZE; idx++ ) {
-			for( let idy=0; idy < MATRIX_SIZE; idy++ ) {
-				if( matrix[idx][idy] == "" ) {
-					matrix[idx][idy] = alphabet[ Math.floor(Math.random() * alphabet.length + 1)-1 ];
+		for( let idx=0; idx < targetMatrix.length; idx++ ) {
+			for( let idy=0; idy < targetMatrix[idx].length; idy++ ) {
+				if( targetMatrix[idx][idy] == "" ) {
+					targetMatrix[idx][idy] = alphabet[ Math.floor(Math.random() * alphabet.length + 1)-1 ];
 				}
 				else {
-					matrix[idx][idy] = "<b>" + matrix[idx][idy] + "</b>";
+					targetMatrix[idx][idy] = "<b>" + targetMatrix[idx][idy] + "</b>";
 				}
 			}
 		}
-		
-		// print result matrix for debug purposes
-		document.write("<table>");
-		for( let idx=0; idx < MATRIX_SIZE; idx++ ) 
-		{
-			document.write("<tr>");
-	
-			for( let idy=0; idy < MATRIX_SIZE; idy++ ) 
-			{
-				document.write("<td>" + matrix[idx][idy] + "</td>");
-			}
-			document.write("</tr>");
-		}
-		document.write("</table>");
+
 	}
-	
 	
 	return {
 		placeWords: placeWords,
