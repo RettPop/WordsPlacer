@@ -1,129 +1,55 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!doctype html>
 <html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<script src="./js/Crossworder.js"></script>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Wordsplacer by RettPop</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-dark.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/main.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
-<style>
-.center {
-    text-align: center;
-    margin: auto;
-    width: 70%;
-    padding: 10px;
-    float:center;
-}
+  </head>
+  <body>
 
-.crosswordTable {
-    border: 3px solid #73AD21;
-}
-</style>
+      <header>
+        <h1>Wordsplacer</h1>
+        <p>JS application to place words to matrix a-la crossword</p>
+      </header>
 
+      <div id="banner">
+        <span id="logo"></span>
 
-<title>Test wordplacer</title>
-</head>
-<script>
-function place()
-{
-    var descr = document.getElementById("crosswords");
-    while (descr.childNodes.length > 0) {
-        descr.removeChild(descr.childNodes[0]);
-    }
-    descr = document.getElementById("description");
-    while (descr.childNodes.length > 0) {
-        descr.removeChild(descr.childNodes[0]);
-    }
+        <a href="https://github.com/RettPop/WordsPlacer" class="button fork"><strong>View On GitHub</strong></a>
+        <div class="downloads">
+          <span>Downloads:</span>
+          <ul>
+            <li><a href="https://github.com/RettPop/WordsPlacer/zipball/master" class="button">ZIP</a></li>
+            <li><a href="https://github.com/RettPop/WordsPlacer/tarball/master" class="button">TAR</a></li>
+          </ul>
+        </div>
+      </div><!-- end banner -->
 
-    setTimeout(function() 
-    		{
-    
-			    //["АЛЬКОР", "ТРУБА", "ОСЬМИЗНАК", "ВЕНТИЛЯТ", "грымза", "два", "крыша", "СЕМЕНЫЧ", "ЯБЛОКО", "НЕМЕЦ", "УХО", "КНИГА", "ВЕТЕР", "ОКНО", "СИНИЙ"]
-			    //АЛЬКОР, ТРУБА, ОСЬМИЗНАК, ВЕНТИЛЯТ, грымза, два, крыша, СЕМЕНЫЧ, ЯБЛОКО, НЕМЕЦ, УХО, КНИГА, ВЕТЕР, ОКНО, СИНИЙ
-			    let matrixSize = parseInt(document.getElementById("matrixSize").value, 10);
-			    let trials = parseInt(document.getElementById("trials").value, 10);
-			    let wordsList = Crossworder.prepareWordsList(document.getElementById("wordsList").value);
-			    let rotations = [];
-			    Object.keys(Crossworder.Rotations).forEach( function(item, index, array) {
-			    	let chb = document.getElementById(item);
-			    	if( chb !== undefined && chb.checked ) {
-			    		rotations.push(item);
-			    	}
-			    } );
-			    
-			    
-			    var result = Crossworder.placeWords(wordsList, rotations, matrixSize);
-			    for ( let idx=0; idx<trials; idx++ ) 
-			    {
-			    	let tmpResult = Crossworder.placeWords(wordsList, rotations, matrixSize);
-			    	if( result.placed.length < tmpResult.placed.length ) {
-			    		result = tmpResult;
-			    	}
-			    	document.getElementById("trials").value = trials - idx;
-			    }
-			    
-			    document.getElementById("trials").value = trials;
-			       
-			    // print result matrix for debug purposes
-			    var container = document.getElementById('crosswords');
-			    var table = document.createElement("table");
-			    table.classList.add("crosswordTable");
-			    for( let idx=0; idx < result.matrix.length; idx++ ) 
-			    {
-			        var tr = document.createElement("tr")
-			        for( let idy=0; idy < result.matrix[idx].length; idy++ ) 
-			        {
-			            var td = document.createElement("td");
-			            td.innerHTML = result.matrix[idx][idy];
-			            tr.appendChild(td);
-			        }
-			        //document.write("</tr>");
-			        table.appendChild(tr);
-			    }
-			    
-			    //document.write("</table>");
-			    container.appendChild(table);
-			
-			    
-			    
-			    var descr = document.getElementById("description");
-			    while (descr.childNodes.length > 0) {
-			    	descr.removeChild(descr.childNodes[0]);
-			    }
-			    descr.appendChild((function (){ let tmp = document.createElement("p"); tmp.innerHTML = "<b>Слов размещено " + result.placed.length + "</b>: " + result.placed.sort().join(", "); return tmp; })());
-			    descr.appendChild((function (){ let tmp = document.createElement("p"); tmp.innerHTML = "<b>Слов не размещено " + result.notPlaced.length + "</b>: " + result.notPlaced.sort().join(", "); return tmp; })());
-    }, 100);
-}
-</script>
-<body>
+    <div class="wrapper">
+      <nav>
+        <ul></ul>
+      </nav>
+      <section>
+        <h3>
+<a id="welcome-to-words-placer" class="anchor" href="#welcome-to-words-placer" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Welcome to Words placer</h3>
 
-<div style="width:70%;float:center" id="content">
-    <div style="width:50%;float:left;border:1;background-color:light-gray" id="settings">
-		<p>
-		Список слов, разделенных запятой, для размещения:<br/> 
-		<textarea rows="5" cols="30" id="wordsList" required></textarea><br /><br />
-		Размер таблицы (по-умолчанию 8):  
-		<input type="number" id="matrixSize" size="3" value="8" required><br /><br />
-		
-        Количество попыток размещения (по-умолчанию 50):  
-        <input type="number" id="trials" size="3" value="50" required><br /><br />
-        
-        <fieldset id="rotations">
-            <legend>Использовать направления:</legend>
-<script type="text/javascript">
-    Object.keys(Crossworder.Rotations).forEach( function(item, index, array) {
-        document.write("<input type=\"checkbox\" checked=true value=" + item + " id=\"" + item + "\">" + Crossworder.Rotations[item].name + "(" + Crossworder.Rotations[item].icon + ")<br />");
-    } );
-</script>  
-        </fieldset><br /><br />
-        
-		<input type="button" onclick = "place()" value="Старт">		
+<p>This tool is provided as is. Use it as you want.</p>
+      </section>
+      <footer>
+        <p>Project maintained by <a href="https://github.com/RettPop">RettPop</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></small></p>
+      </footer>
     </div>
-	<div style="width:50%;float:right" id="results">
-		<div id="crosswords" class="center"></div>
-		<div id="description"></div>
-	</div>
-</div>
-
-</body>
-<script type="text/javascript">document.getElementById("wordsList").value="АЛЬКОР, ТРУБА, ОСЬМИЗНАК, ВЕНТИЛЯТ, грымза, два, крыша, СЕМЕНЫЧ, ЯБЛОКО, НЕМЕЦ, УХО, КНИГА, ВЕТЕР, ОКНО, СИНИЙ";</script>
-
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
 </html>

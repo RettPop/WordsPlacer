@@ -1,0 +1,6 @@
+{
+  "name": "Wordsplacer",
+  "tagline": "JS application to place words to matrix a-la crossword",
+  "body": "### Welcome to Words placer\r\nThis tool is provided as is. Use it as you want.",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
