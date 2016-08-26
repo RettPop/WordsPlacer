@@ -274,7 +274,7 @@ var Crossworder = (function()
 		
 //		console.log("Words placed: " + placedWords.length);
 //		alert("Words notplaced: " + notplacedWords.length);
-		fillGaps(matrix, "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ".split(""));
+//		fillGaps(matrix, "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ".split(""));
 				
 		return {
 			id: Math.floor(Math.random() * 1024 + 1),
