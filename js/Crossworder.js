@@ -2,37 +2,24 @@
  * 
  */
 
-//================================================================================
-//var Rotations = {
-//		HOR: 		{value: 0, name : "Horizontal", 				deltaV : 1,  deltaH : 0},
-//		RHOR: 		{value: 1, name : "Reverse Horizontal", 		deltaV : -1, deltaH : 0},
-//		VERT: 		{value: 2, name : "Vertical", 					deltaV : 0,  deltaH : 1},
-//		RVERT: 		{value: 3, name : "Reverse Vertical", 			deltaV : 0,  deltaH : -1},
-//		DIAG_DEGR: 	{value: 4, name : "Diagonal Degrading", 		deltaV : 1,  deltaH : 1},
-//		RDIAG_DEGR: {value: 5, name : "Reverse Diagonal Degrading", deltaV : -1, deltaH : -1},
-//		DIAG_GROW: 	{value: 6, name : "Diagonal Growing", 			deltaV : 1,  deltaH : -1},
-//		RDIAG_GROW: {value: 7, name : "Reverse Diagonal Growing", 	deltaV : -1, deltaH : 1}
-//};
-//
-//Object.freeze(Rotations);
-
 var Crossworder = (function()
 {
 	"use strict";
 	
 	var Rotations = {
-			HOR: 		{value: 0, name : "Horizontal", 				deltaV : 1,  deltaH : 0},
-			RHOR: 		{value: 1, name : "Reverse Horizontal", 		deltaV : -1, deltaH : 0},
-			VERT: 		{value: 2, name : "Vertical", 					deltaV : 0,  deltaH : 1},
-			RVERT: 		{value: 3, name : "Reverse Vertical", 			deltaV : 0,  deltaH : -1},
-			DIAG_DEGR: 	{value: 4, name : "Diagonal Degrading", 		deltaV : 1,  deltaH : 1},
-			RDIAG_DEGR: {value: 5, name : "Reverse Diagonal Degrading", deltaV : -1, deltaH : -1},
-			DIAG_GROW: 	{value: 6, name : "Diagonal Growing", 			deltaV : 1,  deltaH : -1},
-			RDIAG_GROW: {value: 7, name : "Reverse Diagonal Growing", 	deltaV : -1, deltaH : 1}
+			HOR: 		{value: 0, name : "Horizontal", 				icon:"➡", deltaV : 1,  deltaH : 0},
+			RHOR: 		{value: 1, name : "Reverse Horizontal", 		icon:"⬅", deltaV : -1, deltaH : 0},
+			VERT: 		{value: 2, name : "Vertical", 					icon:"⬆", deltaV : 0,  deltaH : 1},
+			RVERT: 		{value: 3, name : "Reverse Vertical", 			icon:"⬇", deltaV : 0,  deltaH : -1},
+			DIAG_DEGR: 	{value: 4, name : "Diagonal Degrading", 		icon:"↘", deltaV : 1,  deltaH : 1},
+			RDIAG_DEGR: {value: 5, name : "Reverse Diagonal Degrading", icon:"↖", deltaV : -1, deltaH : -1},
+			DIAG_GROW: 	{value: 6, name : "Diagonal Growing", 			icon:"↗", deltaV : 1,  deltaH : -1},
+			RDIAG_GROW: {value: 7, name : "Reverse Diagonal Growing", 	icon:"↙", deltaV : -1, deltaH : 1}
 	};
 	
 	Object.freeze(Rotations);
-		
+
+	//=============================================================================	
 	// utility function
 	function shuffle(array) 
 	{
@@ -58,6 +45,36 @@ var Crossworder = (function()
 	}
 	
 	
+	function fillGaps(targetMatrix, alphabet) {
+		// fill matrix gaps with arbitrary letters
+		for( let idx=0; idx < targetMatrix.length; idx++ ) {
+			for( let idy=0; idy < targetMatrix[idx].length; idy++ ) {
+				if( targetMatrix[idx][idy] == "" ) {
+					targetMatrix[idx][idy] = alphabet[ Math.floor(Math.random() * alphabet.length + 1)-1 ];
+				}
+				else {
+					targetMatrix[idx][idy] = "<b>" + targetMatrix[idx][idy] + "</b>";
+				}
+			}
+		}
+
+	}
+	
+	function prepareWordsList(wordsList)
+	{
+		let targetArr = []
+		wordsList.split(/[^a-zA-Zа-яА-Я]/).forEach( function (item, idx, arr){
+			// word length starts from 3 characters
+			if( (item.trim().length > 2) && (-1 == targetArr.indexOf(item.toUpperCase())) ) {
+				targetArr.push(item.toUpperCase().trim());
+			}
+		} )
+		
+		return targetArr;
+	}
+	
+
+	//=============================================================================	
 	function placeWords (inWordsList, rotationsArr, matrixSize)
 	{
 		/*
@@ -108,12 +125,13 @@ var Crossworder = (function()
 		// Remove duplicates
 		// Shuffle randomly
 		var shuffledWords = [];
-		inWordsList.split(/\s*[;,]\s*/).forEach( function (item, idx, arr){
-			if( -1 == shuffledWords.indexOf(item.toUpperCase()) ) {
-				shuffledWords.push(item.toUpperCase());
-			}
-		} )
-		shuffledWords = shuffle(shuffledWords);
+		if( typeof inWordsList == "string" ) {
+			shuffledWords = shuffle( prepareWordsList(inWordsList) );
+		}
+		else if( inWordsList.length > 0 ) {
+			shuffledWords = shuffle( inWordsList );
+		}
+
 		var wordsArray = [];
 		for (let oneText of shuffledWords) {
 			wordsArray.push(new Word(oneText.toUpperCase()));
@@ -259,29 +277,18 @@ var Crossworder = (function()
 		fillGaps(matrix, "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ".split(""));
 				
 		return {
+			id: Math.floor(Math.random() * 1024 + 1),
 			matrix: matrix,
 			placed: placedWords.map( function(word){ return word.text; } ), 
 			notPlaced: notplacedWords.map( function(word){ return word.text; } ),
 		}
 	}//function placeWords
 	
-	function fillGaps(targetMatrix, alphabet) {
-		// fill matrix gaps with arbitrary letters
-		for( let idx=0; idx < targetMatrix.length; idx++ ) {
-			for( let idy=0; idy < targetMatrix[idx].length; idy++ ) {
-				if( targetMatrix[idx][idy] == "" ) {
-					targetMatrix[idx][idy] = alphabet[ Math.floor(Math.random() * alphabet.length + 1)-1 ];
-				}
-				else {
-					targetMatrix[idx][idy] = "<b>" + targetMatrix[idx][idy] + "</b>";
-				}
-			}
-		}
-
-	}
-	
+	//=============================================================================	
 	return {
 		placeWords: placeWords,
-		Rotations: Rotations 
+		Rotations: Rotations,
+		fillGaps: fillGaps,
+		prepareWordsList: prepareWordsList
 	};
 }) ();
