@@ -9,8 +9,8 @@ var Crossworder = (function()
 	var Rotations = {
 			HOR: 		{value: 0, name : "Horizontal", 				icon:"➡", deltaV : 1,  deltaH : 0},
 			RHOR: 		{value: 1, name : "Reverse Horizontal", 		icon:"⬅", deltaV : -1, deltaH : 0},
-			VERT: 		{value: 2, name : "Vertical", 					icon:"⬆", deltaV : 0,  deltaH : 1},
-			RVERT: 		{value: 3, name : "Reverse Vertical", 			icon:"⬇", deltaV : 0,  deltaH : -1},
+			VERT: 		{value: 2, name : "Vertical", 					icon:"⬇", deltaV : 0,  deltaH : 1},
+			RVERT: 		{value: 3, name : "Reverse Vertical", 			icon:"⬆", deltaV : 0,  deltaH : -1},
 			DIAG_DEGR: 	{value: 4, name : "Diagonal Degrading", 		icon:"↘", deltaV : 1,  deltaH : 1},
 			RDIAG_DEGR: {value: 5, name : "Reverse Diagonal Degrading", icon:"↖", deltaV : -1, deltaH : -1},
 			DIAG_GROW: 	{value: 6, name : "Diagonal Growing", 			icon:"↗", deltaV : 1,  deltaH : -1},
@@ -189,14 +189,14 @@ var Crossworder = (function()
 	
 	                    //TODO: Optimize check
 	                    // check if word can fit rest of cells
-						if( posX + oneRotation.deltaH * oneWord.length < 0 ||
-							posX + oneRotation.deltaH * oneWord.length > MATRIX_SIZE ) 
+						if( posX + oneRotation.deltaH * (oneWord.length) < -1 ||
+							posX + oneRotation.deltaH * (oneWord.length) > MATRIX_SIZE ) 
 						{
 							continue
 						}
 							
-						if( posY + oneRotation.deltaV * oneWord.length < 0 ||
-							posY + oneRotation.deltaV * oneWord.length > MATRIX_SIZE ) 
+						if( posY + oneRotation.deltaV * (oneWord.length) < -1 ||
+							posY + oneRotation.deltaV * (oneWord.length) > MATRIX_SIZE ) 
 						{
 							continue
 						}
@@ -216,8 +216,8 @@ var Crossworder = (function()
 	                        }
 	
 	                        // increase matrix coords
-	                        posX += oneRotation.deltaH;
-	                        posY += oneRotation.deltaV;
+ 	                        posY += oneRotation.deltaV;
+ 	                        posX += oneRotation.deltaH;
 						}
 	
 	                    // if no obstacles were found, add position to available positions array and continue
