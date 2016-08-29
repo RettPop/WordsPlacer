@@ -4,7 +4,7 @@
 
 var Crossworder = (function()
 {
-	"use strict";
+	//"use strict";
 	
 	var Rotations = {
 			HOR: 		{value: 0, name : "Horizontal", 				icon:"➡", deltaV : 1,  deltaH : 0},
