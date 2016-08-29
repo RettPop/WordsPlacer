@@ -23,8 +23,8 @@ var Crossworder = (function()
 	// utility function
 	function shuffle(array) 
 	{
-	    let counter = array.length;
-	    let newArr = array.slice();
+	    var counter = array.length;
+	    var newArr = array.slice();
 
 	    // While there are elements in the array
 	    while (counter > 0) 
@@ -62,7 +62,7 @@ var Crossworder = (function()
 	
 	function prepareWordsList(wordsList)
 	{
-		let targetArr = []
+		var targetArr = []
 		wordsList.split(/[^a-zA-Zа-яА-Я]/).forEach( function (item, idx, arr){
 			// word length starts from 3 characters
 			if( (item.trim().length > 2) && (-1 == targetArr.indexOf(item.toUpperCase())) ) {
