@@ -118,7 +118,7 @@ var Crossworder = (function()
 			};
 		};
 		
-		const MATRIX_SIZE = matrixSize || 8;
+		var MATRIX_SIZE = matrixSize || 8;
 		
 		//================================================================================
 		// Create array of words objects
