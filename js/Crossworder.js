@@ -30,13 +30,13 @@ var Crossworder = (function()
 	    while (counter > 0) 
 	    {
 	        // Pick a random index
-	        let index = Math.floor(Math.random() * counter);
+	        var index = Math.floor(Math.random() * counter);
 
 	        // Decrease counter by 1
 	        counter--;
 
 	        // And swap the last element with it
-	        let temp = newArr[counter];
+	        var temp = newArr[counter];
 	        newArr[counter] = newArr[index];
 	        newArr[index] = temp;
 	    }
@@ -47,8 +47,8 @@ var Crossworder = (function()
 	
 	function fillGaps(targetMatrix, alphabet) {
 		// fill matrix gaps with arbitrary letters
-		for( let idx=0; idx < targetMatrix.length; idx++ ) {
-			for( let idy=0; idy < targetMatrix[idx].length; idy++ ) {
+		for( var idx=0; idx < targetMatrix.length; idx++ ) {
+			for( var idy=0; idy < targetMatrix[idx].length; idy++ ) {
 				if( targetMatrix[idx][idy] == "" ) {
 					targetMatrix[idx][idy] = alphabet[ Math.floor(Math.random() * alphabet.length + 1)-1 ];
 				}
