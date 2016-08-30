@@ -1,53 +1,133 @@
-<!doctype html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-  <head>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <title>Wordsplacer by RettPop</title>
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/github-dark.css">
+    <link rel="stylesheet" href="stylesheets/crossworder.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script src="javascripts/main.js"></script>
     <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-  </head>
-  <body>
-      <header>
-        <h1>Wordsplacer</h1>
-        <p>JS application to place words to matrix a-la crossword</p>
-      </header>
-      <div id="banner">
-        <span id="logo"></span>
+    <script src="./js/Crossworder.js"></script>
+</head>
+<body>
 
-        <a href="https://github.com/RettPop/WordsPlacer" class="button fork"><strong>View On GitHub</strong></a>
-        <div class="downloads">
-          <span>Downloads:</span>
-          <ul>
-            <li><a href="https://github.com/RettPop/WordsPlacer/zipball/master" class="button">ZIP</a></li>
-            <li><a href="https://github.com/RettPop/WordsPlacer/tarball/master" class="button">TAR</a></li>
-          </ul>
-        </div>
-      </div><!-- end banner -->
-
-    <div class="wrapper">
-      <nav>
-        <ul></ul>
-      </nav>
-      <section>
-        <h3>
-<a id="welcome-to-words-placer" class="anchor" href="#welcome-to-words-placer" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Welcome to Words placer</h3>
-
-        <p>This tool is provided as is. Use it as you want.</p>
-        <p><a href="wordsplacer.html">Open placer</a></p>
-      </section>
-      <footer>
-        <p>Project maintained by <a href="https://github.com/RettPop">RettPop</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></small></p>
-      </footer>
+<header>
+    <h1>Wordsplacer</h1>
+    <p>JS application to place words to matrix a-la crossword</p>
+</header>
+<div class="content" id="content">
+    <div class="innerbox" style="float:left">
+	    <div class="settings" id="settings">
+	       <fieldset id="settings" style="width:90%;padding:10px;">
+                <legend>Настройки:</legend>
+				<p>
+				Список слов, разделенных запятой, для размещения:<br/> 
+				<textarea rows="5" cols="30" id="wordsList" required style="width:95%;max-width:95%;min-width:10%;"></textarea><br /><br />
+				Размер таблицы (по-умолчанию 8):
+                <input type="number" id="matrixSize" size="3" value="8" required style="width:50px"><br /><br />
+		        Количество попыток размещения:  
+		        <input type="number" id="trials" size="3" value="50" required><br />
+		        
+		        <fieldset id="rotations" style="width:90%">
+		            <legend>Использовать направления:</legend>
+					<script type="text/javascript">
+					    Object.keys(Crossworder.Rotations).forEach( function(item, index, array) {
+					        document.write("<input type=\"checkbox\" checked=true value=" + item + " id=\"" + item + "\">(" + Crossworder.Rotations[item].icon + ") " + Crossworder.Rotations[item].name + "<br />");
+					    } );
+					</script>  
+		        </fieldset>
+	        </fieldset>
+	        <br />
+			<div style="text-align:center;"><input type="button" onclick = "place()" value="Старт" style="width:50%;" align="center"></div>		
+	    </div>
     </div>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-    
-  </body>
+    <div class="innerbox left">
+        <fieldset id="settings" style="width:90%">
+            <legend>Результат:</legend>
+			<div class="results" id="results">
+				<div id="crosswords" class="center"></div>
+	            <div id="description"></div>
+			</div>
+		</fieldset>
+	</div>
+</div>
+</body>
+<script type="text/javascript">//document.getElementById("wordsList").value="АЛЬКОР, ТРУБА, ОСЬМИЗНАК, ВЕНТИЛЯТ, грымза, два, крыша, СЕМЕНЫЧ, ЯБЛОКО, НЕМЕЦ, УХО, КНИГА, ВЕТЕР, ОКНО, СИНИЙ";</script>
+<script>
+function place()
+{
+    var descr = document.getElementById("crosswords");
+    while (descr.childNodes.length > 0) {
+        descr.removeChild(descr.childNodes[0]);
+    }
+    descr = document.getElementById("description");
+    while (descr.childNodes.length > 0) {
+        descr.removeChild(descr.childNodes[0]);
+    }
+
+    // launching placement wit hsome delay to give browser time to render screen  
+    setTimeout(function() {
+                //["АЛЬКОР", "ТРУБА", "ОСЬМИЗНАК", "ВЕНТИЛЯТ", "грымза", "два", "крыша", "СЕМЕНЫЧ", "ЯБЛОКО", "НЕМЕЦ", "УХО", "КНИГА", "ВЕТЕР", "ОКНО", "СИНИЙ"]
+                //АЛЬКОР, ТРУБА, ОСЬМИЗНАК, ВЕНТИЛЯТ, грымза, два, крыша, СЕМЕНЫЧ, ЯБЛОКО, НЕМЕЦ, УХО, КНИГА, ВЕТЕР, ОКНО, СИНИЙ
+                var matrixSize = parseInt(document.getElementById("matrixSize").value, 10);
+                var trials = parseInt(document.getElementById("trials").value, 10);
+                var wordsList = Crossworder.prepareWordsList(document.getElementById("wordsList").value);
+                
+                // check what rotations user selected
+                var rotations = [];
+                Object.keys(Crossworder.Rotations).forEach( function(item, index, array) {
+                    var chb = document.getElementById(item);
+                    if( chb !== undefined && chb.checked ) {
+                        rotations.push(item);
+                    }
+                } );
+             
+                //placing words selected amount of times
+                var result = Crossworder.placeWords(wordsList, rotations, matrixSize);
+                for ( var idx=0; idx<trials; idx++ )
+                {
+                    var tmpResult = Crossworder.placeWords(wordsList, rotations, matrixSize);
+                    if( result.placed.length < tmpResult.placed.length ) {
+                        result = tmpResult;
+                    }
+                }
+                   
+                // print result matrix for debug purposes
+                Crossworder.fillGaps(result.matrix, "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ".split(""));
+                var container = document.getElementById('crosswords');
+                var table = document.createElement("table");
+                table.classList.add("crosswordTable");
+                for( var idx=0; idx < result.matrix.length; idx++ )
+                {
+                    var tr = document.createElement("tr")
+                    for( var idy=0; idy < result.matrix[idx].length; idy++ )
+                    {
+                        var td = document.createElement("td");
+                        td.innerHTML = result.matrix[idx][idy];
+                        tr.appendChild(td);
+                    }
+                    //document.write("</tr>");
+                    table.appendChild(tr);
+                }
+                
+                //document.write("</table>");
+                container.appendChild(table);
+            
+                
+                
+                var descr = document.getElementById("description");
+                while (descr.childNodes.length > 0) {
+                    descr.removeChild(descr.childNodes[0]);
+                }
+                descr.appendChild((function (){ var tmp = document.createElement("p"); tmp.innerHTML = "<b>Слов размещено " + result.placed.length + "</b>: " + result.placed.sort().join(", "); return tmp; })());
+                descr.appendChild((function (){ var tmp = document.createElement("p"); tmp.innerHTML = "<b>Слов не размещено " + result.notPlaced.length + "</b>: " + result.notPlaced.sort().join(", "); return tmp; })());
+    }, 100);
+}
+</script>
+
 </html>
