@@ -133,7 +133,7 @@ var Crossworder = (function()
 		}
 
 		var wordsArray = [];
-		for (let oneText of shuffledWords) {
+		for (var oneText of shuffledWords) {
 			wordsArray.push(new Word(oneText.toUpperCase()));
 		}
 		
@@ -177,15 +177,15 @@ var Crossworder = (function()
 			);
 			
 			// for each rotation
-			for (let oneRotation of positions.keys() )
+			for (var oneRotation of positions.keys() )
 			{
 				// running through the matrix and trying to place
-				for(let idx = 0; idx < matrix.length; idx++)
+				for(var idx = 0; idx < matrix.length; idx++)
 				{
-					for(let idy = 0; idy < matrix[idx].length; idy++)
+					for(var idy = 0; idy < matrix[idx].length; idy++)
 					{
-						let posX = idx;
-						let posY = idy;
+						var posX = idx;
+						var posY = idy;
 	
 	                    //TODO: Optimize check
 	                    // check if word can fit rest of cells
@@ -204,9 +204,9 @@ var Crossworder = (function()
 	
 						// walk through all word letters and check if they can be placed in the matrix
 	                    var canBePlaced = true;
-						for( let idxLetter = 0; idxLetter < oneWord.length; idxLetter++ )
+						for( var idxLetter = 0; idxLetter < oneWord.length; idxLetter++ )
 						{
-	                        const matrixCell = matrix[posX][posY];
+	                        var matrixCell = matrix[posX][posY];
 	
 	                        if( matrixCell != "" &&
 	                            matrixCell != oneWord.text.charAt(idxLetter) )
@@ -233,10 +233,10 @@ var Crossworder = (function()
 	                    }
 					} //for vary
 				} //for(var idx = 0; idx < matrix.length; idx++)
-			} //for (let oneRotation of positions.keys() )
+			} //for (var oneRotation of positions.keys() )
 	
 			// if we have positions available, choose one and place word there
-			let posArr = [];
+			var posArr = [];
 			positions.forEach( function (oneRotationArr, oneRotation, map) {
 				if( oneRotationArr.length > 0 ) {
 					posArr.push(oneRotationArr);
@@ -251,17 +251,17 @@ var Crossworder = (function()
 		    {
 		    	// choose one of available rotations.
 		    	// need as, i.e., DIAG rotation has less amount and being selected less than others
-				let selRotationIdx = Math.floor(Math.random() * posArr.length + 1); 
+				var selRotationIdx = Math.floor(Math.random() * posArr.length + 1);
 	
 		    	// from rotation chosen select one of positions 
-		        let randIdx = Math.floor(Math.random() * posArr[selRotationIdx - 1].length + 1);
+		        var randIdx = Math.floor(Math.random() * posArr[selRotationIdx - 1].length + 1);
 		        oneWord.position = posArr[selRotationIdx - 1][randIdx - 1];
 		        placedWords.push(oneWord);
 		        
 		        // fill the matrix with current word
-	        	let posX = oneWord.position.startX;
-	        	let posY = oneWord.position.startY;
-		        for( let idx = 0; idx < oneWord.length; idx++ ) 
+	        	var posX = oneWord.position.startX;
+	        	var posY = oneWord.position.startY;
+		        for( var idx = 0; idx < oneWord.length; idx++ )
 		        {
 		        	matrix[posX][posY] = oneWord.text.charAt(idx);
 	

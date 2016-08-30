@@ -134,14 +134,14 @@ function place()
     setTimeout(function() {
                 //["АЛЬКОР", "ТРУБА", "ОСЬМИЗНАК", "ВЕНТИЛЯТ", "грымза", "два", "крыша", "СЕМЕНЫЧ", "ЯБЛОКО", "НЕМЕЦ", "УХО", "КНИГА", "ВЕТЕР", "ОКНО", "СИНИЙ"]
                 //АЛЬКОР, ТРУБА, ОСЬМИЗНАК, ВЕНТИЛЯТ, грымза, два, крыша, СЕМЕНЫЧ, ЯБЛОКО, НЕМЕЦ, УХО, КНИГА, ВЕТЕР, ОКНО, СИНИЙ
-                let matrixSize = parseInt(document.getElementById("matrixSize").value, 10);
-                let trials = parseInt(document.getElementById("trials").value, 10);
-                let wordsList = Crossworder.prepareWordsList(document.getElementById("wordsList").value);
+                var matrixSize = parseInt(document.getElementById("matrixSize").value, 10);
+                var trials = parseInt(document.getElementById("trials").value, 10);
+                var wordsList = Crossworder.prepareWordsList(document.getElementById("wordsList").value);
                 
                 // check what rotations user selected
-                let rotations = [];
+                var rotations = [];
                 Object.keys(Crossworder.Rotations).forEach( function(item, index, array) {
-                    let chb = document.getElementById(item);
+                    var chb = document.getElementById(item);
                     if( chb !== undefined && chb.checked ) {
                         rotations.push(item);
                     }
@@ -149,9 +149,9 @@ function place()
              
                 //placing words selected amount of times
                 var result = Crossworder.placeWords(wordsList, rotations, matrixSize);
-                for ( let idx=0; idx<trials; idx++ ) 
+                for ( var idx=0; idx<trials; idx++ )
                 {
-                    let tmpResult = Crossworder.placeWords(wordsList, rotations, matrixSize);
+                    var tmpResult = Crossworder.placeWords(wordsList, rotations, matrixSize);
                     if( result.placed.length < tmpResult.placed.length ) {
                         result = tmpResult;
                     }
@@ -162,10 +162,10 @@ function place()
                 var container = document.getElementById('crosswords');
                 var table = document.createElement("table");
                 table.classList.add("crosswordTable");
-                for( let idx=0; idx < result.matrix.length; idx++ ) 
+                for( var idx=0; idx < result.matrix.length; idx++ )
                 {
                     var tr = document.createElement("tr")
-                    for( let idy=0; idy < result.matrix[idx].length; idy++ ) 
+                    for( var idy=0; idy < result.matrix[idx].length; idy++ )
                     {
                         var td = document.createElement("td");
                         td.innerHTML = result.matrix[idx][idy];
@@ -184,8 +184,8 @@ function place()
                 while (descr.childNodes.length > 0) {
                     descr.removeChild(descr.childNodes[0]);
                 }
-                descr.appendChild((function (){ let tmp = document.createElement("p"); tmp.innerHTML = "<b>Слов размещено " + result.placed.length + "</b>: " + result.placed.sort().join(", "); return tmp; })());
-                descr.appendChild((function (){ let tmp = document.createElement("p"); tmp.innerHTML = "<b>Слов не размещено " + result.notPlaced.length + "</b>: " + result.notPlaced.sort().join(", "); return tmp; })());
+                descr.appendChild((function (){ var tmp = document.createElement("p"); tmp.innerHTML = "<b>Слов размещено " + result.placed.length + "</b>: " + result.placed.sort().join(", "); return tmp; })());
+                descr.appendChild((function (){ var tmp = document.createElement("p"); tmp.innerHTML = "<b>Слов не размещено " + result.notPlaced.length + "</b>: " + result.notPlaced.sort().join(", "); return tmp; })());
     }, 100);
 }
 </script>
